@@ -1,0 +1,84 @@
+specVersion: 0.0.4
+description: Gnosis Safe Subgraph
+features:
+    - nonFatalErrors
+    - grafting
+schema:
+    file: ./schema.graphql
+dataSources:
+    -   kind: ethereum/contract
+        name: GnosisSafeProxyFactory_v1_1_1
+        network: mainnet
+        source:
+            address: '0x76E2cFc1F5Fa8F6a5b3fC4c8F4788F0116861F9B'
+            abi: GnosisSafeProxyFactory
+            startBlock: 9084508
+        mapping:
+            kind: ethereum/events
+            apiVersion: 0.0.6
+            language: wasm/assemblyscript
+            file: ./src/safeFactory.ts
+            entities:
+                - Wallet
+            abis:
+                -   name: GnosisSafeProxyFactory
+                    file: ./abis/GnosisSafeProxyFactory_v1.1.1.json
+                -   name: GnosisSafe
+                    file: ./abis/GnosisSafe.json
+            eventHandlers:
+                -   event: ProxyCreation(address)
+                    handler: handleProxyCreation_1_1_1
+    -   kind: ethereum/contract
+        name: GnosisSafeProxyFactory_v1_3_0
+        network: mainnet
+        source:
+            address: '0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2'
+            abi: GnosisSafeProxyFactory
+            startBlock: 12504126
+        mapping:
+            kind: ethereum/events
+            apiVersion: 0.0.6
+            language: wasm/assemblyscript
+            file: ./src/safeFactory.ts
+            entities:
+                - Wallet
+            abis:
+                -   name: GnosisSafeProxyFactory
+                    file: ./abis/GnosisSafeProxyFactory_v1.3.0.json
+                -   name: GnosisSafe
+                    file: ./abis/GnosisSafe.json
+            eventHandlers:
+                -   event: ProxyCreation(address,address)
+                    handler: handleProxyCreation_1_3_0
+templates:
+    -   kind: ethereum/contract
+        name: GnosisSafe
+        network: mainnet
+        source:
+            abi: GnosisSafe
+        mapping:
+            kind: ethereum/events
+            apiVersion: 0.0.6
+            language: wasm/assemblyscript
+            file: ./src/safeWallets.ts
+            entities:
+                - Wallet
+            abis:
+                -   name: GnosisSafe
+                    file: ./abis/GnosisSafe.json
+                -   name: GnosisSafeL2
+                    file: ./abis/GnosisSafeL2.json
+            eventHandlers:
+                -   event: AddedOwner(address)
+                    handler: handleAddedOwner
+                -   event: RemovedOwner(address)
+                    handler: handleRemovedOwner
+                -   event: ChangedThreshold(uint256)
+                    handler: handleChangedThreshold
+                -   event: ExecutionSuccess(bytes32,uint256)
+                    handler: handleExecutionSuccess
+                -   event: ExecutionFailure(bytes32,uint256)
+                    handler: handleExecutionFailure
+            callHandlers:
+                -   function: execTransaction(address,uint256,bytes,uint8,uint256,uint256,uint256,address,address,bytes)
+                    handler: handleExecTransaction

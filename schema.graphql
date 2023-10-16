@@ -1,0 +1,46 @@
+type Wallet @entity {
+    id: ID!
+    creator: Bytes!
+    network: String!
+    stamp: BigInt!
+    hash: Bytes!
+    factory: Bytes!
+    mastercopy: Bytes
+    version: String
+    currentNonce: BigInt!
+    owners: [Bytes!]!
+    threshold: BigInt!
+    transactions: [Transaction!]!
+}
+
+type Transaction @entity {
+    id: ID!
+    stamp: BigInt
+    block: BigInt
+    hash: Bytes
+    status: TransactionStatus
+    txhash: Bytes
+    value: BigInt
+    destination: Bytes
+    data: Bytes
+    signatures: Bytes
+    nonce: BigInt
+    operation: Operation
+    estimatedSafeTxGas: BigInt
+    estimatedBaseGas: BigInt
+    gasPrice: BigInt
+    gasToken: Bytes
+    refundReceiver: Bytes
+    payment: BigInt
+    wallet: Wallet! @derivedFrom(field: "transactions")
+}
+
+enum TransactionStatus {
+    EXECUTED
+    FAILED
+}
+
+enum Operation {
+    CALL
+    DELEGATE_CALL
+}
